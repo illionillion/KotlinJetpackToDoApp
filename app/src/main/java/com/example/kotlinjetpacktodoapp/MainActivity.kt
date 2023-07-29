@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
@@ -34,9 +35,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.kotlinjetpacktodoapp.ui.theme.KotlinJetpackToDoAppTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 data class TaskItem(val id: Int, val taskName: String, val isCompleted: Boolean)
 
@@ -48,7 +52,6 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-//                    color = MaterialTheme.colorScheme.background,
                 ) {
                     ToDoListApp()
                 }
@@ -59,43 +62,18 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ToDoListApp() {
-    var taskId by remember { mutableStateOf(1) }
-    var taskItems by remember { mutableStateOf(listOf<TaskItem>()) }
-
-    fun onTaskAdd() {
-        taskItems = taskItems.plus(TaskItem(taskId, taskName = "", isCompleted = false))
-        taskId++
-    }
-
-    fun onTaskNameChange(taskId: Int, newName: String) {
-        taskItems = taskItems.map { task ->
-            if (task.id == taskId) task.copy(taskName = newName)
-            else task
-        }
-    }
-
-    fun onTaskCompletionToggle(taskId: Int, isCompleted: Boolean) {
-        taskItems = taskItems.map { task ->
-            if (task.id == taskId) task.copy(isCompleted = isCompleted)
-            else task
-        }
-    }
-
-    fun onTaskDelete(taskId: Int) {
-        taskItems = taskItems.filter { task -> task.id != taskId }
-    }
-
+    val viewModel: ToDoViewModel = viewModel()
     ToDoList(
-        taskItems = taskItems,
-        onTaskAdd = { onTaskAdd() },
-        onTaskNameChange = { taskId, newName -> onTaskNameChange(taskId, newName) },
+        taskItems = viewModel.taskItems,
+        onTaskAdd = { viewModel.onTaskAdd() },
+        onTaskNameChange = { taskId, newName -> viewModel.onTaskNameChange(taskId, newName) },
         onTaskCompletionToggle = { taskId, isCompleted ->
-            onTaskCompletionToggle(
+            viewModel.onTaskCompletionToggle(
                 taskId,
                 isCompleted
             )
         },
-    ) { taskId -> onTaskDelete(taskId) }
+    ) { taskId -> viewModel.onTaskDelete(taskId) }
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -184,7 +162,11 @@ fun ToDoItem(
             },
             modifier = Modifier
                 .weight(1f),
-            placeholder = { Text(text = "新しいタスク") }
+            placeholder = { Text(text = "新しいタスク") },
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Ascii
+            )
         )
 
         Button(
@@ -219,8 +201,8 @@ fun ToDoItemPreview() {
         taskName = "勉強",
         isCompleted = false,
         onTaskDelete = {},
-        onCompletionToggle = { _ -> },
-        onTaskNameChange = { _ -> }
+        onCompletionToggle = {},
+        onTaskNameChange = {}
     )
 }
 
@@ -233,9 +215,9 @@ fun ToDoItemListPreview() {
             TaskItem(id = 2, taskName = "買い物", isCompleted = true),
             TaskItem(id = 3, taskName = "運動", isCompleted = false),
         ),
-        onTaskNameChange = { _, _ -> Unit },
+        onTaskNameChange = { _, _ -> },
         onTaskAdd = {},
-        onTaskDelete = { _ -> Unit },
-        onTaskCompletionToggle = { _, _ -> Unit }
+        onTaskDelete = {},
+        onTaskCompletionToggle = { _, _ -> }
     )
 }
