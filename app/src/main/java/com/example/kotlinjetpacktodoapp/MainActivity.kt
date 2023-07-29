@@ -38,7 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.kotlinjetpacktodoapp.ui.theme.KotlinJetpackToDoAppTheme
 
-data class TaskItem (val id: Int, val taskName: String, val isCompleted: Boolean)
+data class TaskItem(val id: Int, val taskName: String, val isCompleted: Boolean)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,18 +50,15 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
 //                    color = MaterialTheme.colorScheme.background,
                 ) {
-                    ToDoList()
+                    ToDoListApp()
                 }
             }
         }
     }
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ToDoList () {
-
+fun ToDoListApp() {
     var taskId by remember { mutableStateOf(1) }
     var taskItems by remember { mutableStateOf(listOf<TaskItem>()) }
 
@@ -87,6 +84,30 @@ fun ToDoList () {
     fun onTaskDelete(taskId: Int) {
         taskItems = taskItems.filter { task -> task.id != taskId }
     }
+
+    ToDoList(
+        taskItems = taskItems,
+        onTaskAdd = { onTaskAdd() },
+        onTaskNameChange = { taskId, newName -> onTaskNameChange(taskId, newName) },
+        onTaskCompletionToggle = { taskId, isCompleted ->
+            onTaskCompletionToggle(
+                taskId,
+                isCompleted
+            )
+        },
+    ) { taskId -> onTaskDelete(taskId) }
+}
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ToDoList(
+    taskItems: List<TaskItem>,
+    onTaskAdd: () -> Unit,
+    onTaskNameChange: (Int, String) -> Unit,
+    onTaskCompletionToggle: (Int, Boolean) -> Unit,
+    onTaskDelete: (Int) -> Unit,
+) {
 
 
     Scaffold(
@@ -116,7 +137,7 @@ fun ToDoList () {
         ) {
             LazyColumn(
                 modifier = Modifier
-                .fillMaxSize(),
+                    .fillMaxSize(),
                 contentPadding = PaddingValues(8.dp)
             ) {
                 items(taskItems) { task ->
@@ -124,7 +145,12 @@ fun ToDoList () {
                         taskName = task.taskName,
                         isCompleted = task.isCompleted,
                         onTaskNameChange = { newName -> onTaskNameChange(task.id, newName) },
-                        onCompletionToggle = { isCompleted -> onTaskCompletionToggle(task.id, isCompleted) },
+                        onCompletionToggle = { isCompleted ->
+                            onTaskCompletionToggle(
+                                task.id,
+                                isCompleted
+                            )
+                        },
                         onTaskDelete = { onTaskDelete(task.id) }
                     )
                 }
@@ -136,7 +162,7 @@ fun ToDoList () {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ToDoItem (
+fun ToDoItem(
     taskName: String,
     isCompleted: Boolean,
     onTaskNameChange: (String) -> Unit,
@@ -166,10 +192,10 @@ fun ToDoItem (
                 onCompletionToggle(!isCompleted)
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = if(isCompleted) Color.DarkGray else Color.Green
+                containerColor = if (isCompleted) Color.DarkGray else Color.Green
             )
         ) {
-            Text(text = if(isCompleted) "完了済み" else "完了", fontWeight = FontWeight(800))
+            Text(text = if (isCompleted) "完了済み" else "完了", fontWeight = FontWeight(800))
         }
 
         Button(
@@ -194,12 +220,22 @@ fun ToDoItemPreview() {
         isCompleted = false,
         onTaskDelete = {},
         onCompletionToggle = { _ -> },
-        onTaskNameChange = {_ -> }
+        onTaskNameChange = { _ -> }
     )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ToDoItemListPreview() {
-    ToDoList()
+    ToDoList(
+        taskItems = listOf(
+            TaskItem(id = 1, taskName = "勉強", isCompleted = false),
+            TaskItem(id = 2, taskName = "買い物", isCompleted = true),
+            TaskItem(id = 3, taskName = "運動", isCompleted = false),
+        ),
+        onTaskNameChange = { _, _ -> Unit },
+        onTaskAdd = {},
+        onTaskDelete = { _ -> Unit },
+        onTaskCompletionToggle = { _, _ -> Unit }
+    )
 }
