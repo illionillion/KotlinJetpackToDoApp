@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 
 class ToDoViewModel : ViewModel() {
-    var taskId by mutableStateOf(0)
+    private var taskId by mutableStateOf(0)
     var taskItems by mutableStateOf(listOf<TaskItem>())
 
     fun onTaskAdd() {
