@@ -11,7 +11,7 @@ public class ToDoPreferences(context: Context) {
         return sharedPreferences.getInt("toDoCount", 0)
     }
 
-    fun saveToDoList(taskList: MutableList<TaskItem>) {
+    fun saveToDoList(taskList: List<TaskItem>) {
         val json = StringBuilder()
         for (taskItem in taskList) {
             json.append("${taskItem.id},${taskItem.taskName},${taskItem.isCompleted}|")
@@ -19,7 +19,7 @@ public class ToDoPreferences(context: Context) {
         sharedPreferences.edit().putString("toDoListKey", json.toString()).apply()
     }
 
-    fun getToDoList(): MutableList<TaskItem> {
+    fun loadToDoList(): List<TaskItem> {
         val taskList = mutableListOf<TaskItem>()
         val json = sharedPreferences.getString("toDoListKey", null)
         json?.split("|")?.forEach { item ->

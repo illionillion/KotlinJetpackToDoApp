@@ -34,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -62,7 +63,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ToDoListApp() {
-    val viewModel: ToDoViewModel = viewModel()
+    val context = LocalContext.current
+    val toDoPreferences = remember { ToDoPreferences(context) }
+    val viewModel: ToDoViewModel = viewModel(factory = ToDoViewModelFactory(toDoPreferences))
     ToDoList(
         taskItems = viewModel.taskItems,
         onTaskAdd = { viewModel.onTaskAdd() },
