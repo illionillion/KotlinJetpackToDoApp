@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,12 +25,15 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,7 +72,9 @@ fun ToDoListApp() {
     val context = LocalContext.current
     val toDoPreferences = remember { ToDoPreferences(context) }
     val viewModel: ToDoViewModel = viewModel(factory = ToDoViewModelFactory(toDoPreferences))
+    val isOpenDialog = rememberSaveable { mutableStateOf(false) }
     ToDoList(
+        isOpenDialog = isOpenDialog,
         taskItems = viewModel.taskItems,
         onTaskAdd = { viewModel.onTaskAdd() },
         onTaskNameChange = { taskId, newName -> viewModel.onTaskNameChange(taskId, newName) },
@@ -78,15 +84,15 @@ fun ToDoListApp() {
                 isCompleted
             )
         },
-        onTaskDelete = { taskId -> viewModel.onTaskDelete(taskId) },
-        onTaskClear = { viewModel.onTaskClear() }
-    )
+        onTaskDelete = { taskId -> viewModel.onTaskDelete(taskId) }
+    ) { viewModel.onTaskClear() }
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToDoList(
+    isOpenDialog: MutableState<Boolean>,
     taskItems: List<TaskItem>,
     onTaskAdd: () -> Unit,
     onTaskNameChange: (Int, String) -> Unit,
@@ -108,11 +114,11 @@ fun ToDoList(
             )
         },
         floatingActionButton = {
-            Row (
+            Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ){
+            ) {
 
-                FloatingActionButton(onClick = { onTaskClear() }) {
+                FloatingActionButton(onClick = { if (taskItems.isNotEmpty()) isOpenDialog.value = true }) {
                     Text(text = "クリア")
                 }
 
@@ -151,6 +157,37 @@ fun ToDoList(
                 }
 
             }
+        }
+
+        // アラートを表示するためのコンポーネント
+        if (isOpenDialog.value) {
+            AlertDialog(
+                onDismissRequest = { isOpenDialog.value = false },
+                title = {
+                    Text(text = "タスクをクリアしますか？")
+                },
+                text = {
+                    Text(text = "この操作は元に戻せません。本当にクリアしますか？")
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            isOpenDialog.value = false
+                            onTaskClear()
+                        },
+                        colors = ButtonDefaults.textButtonColors(contentColor = Color.Red)
+                    ) {
+                        Text(text = "クリア")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { isOpenDialog.value = false }
+                    ) {
+                        Text(text = "キャンセル")
+                    }
+                }
+            )
         }
     }
 }
@@ -226,6 +263,8 @@ fun ToDoItemPreview() {
 @Preview(showBackground = true)
 @Composable
 fun ToDoItemListPreview() {
+    val isOpenDialog = remember { mutableStateOf(true) }
+
     ToDoList(
         taskItems = listOf(
             TaskItem(id = 1, taskName = "勉強", isCompleted = false),
@@ -236,6 +275,6 @@ fun ToDoItemListPreview() {
         onTaskAdd = {},
         onTaskDelete = {},
         onTaskCompletionToggle = { _, _ -> },
-        onTaskClear = {},
-    )
+        isOpenDialog = isOpenDialog,
+    ) {}
 }
