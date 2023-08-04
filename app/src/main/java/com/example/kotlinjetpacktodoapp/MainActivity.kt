@@ -76,7 +76,9 @@ fun ToDoListApp() {
                 isCompleted
             )
         },
-    ) { taskId -> viewModel.onTaskDelete(taskId) }
+        onTaskDelete = { taskId -> viewModel.onTaskDelete(taskId) },
+        onTaskClear = { viewModel.onTaskClear() }
+    )
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -88,6 +90,7 @@ fun ToDoList(
     onTaskNameChange: (Int, String) -> Unit,
     onTaskCompletionToggle: (Int, Boolean) -> Unit,
     onTaskDelete: (Int) -> Unit,
+    onTaskClear: () -> Unit,
 ) {
 
 
@@ -103,11 +106,20 @@ fun ToDoList(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { onTaskAdd() }) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "追加",
-                )
+            Row (
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ){
+
+                FloatingActionButton(onClick = { onTaskClear() }) {
+                    Text(text = "クリア")
+                }
+
+                FloatingActionButton(onClick = { onTaskAdd() }) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "追加",
+                    )
+                }
             }
         },
     ) {
@@ -221,6 +233,7 @@ fun ToDoItemListPreview() {
         onTaskNameChange = { _, _ -> },
         onTaskAdd = {},
         onTaskDelete = {},
-        onTaskCompletionToggle = { _, _ -> }
+        onTaskCompletionToggle = { _, _ -> },
+        onTaskClear = {},
     )
 }

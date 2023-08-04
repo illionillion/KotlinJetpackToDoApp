@@ -40,6 +40,12 @@ class ToDoViewModel(
         updatePreference()
     }
 
+    fun onTaskClear() {
+        taskItems = emptyList()
+        taskId = 0
+        updatePreference()
+    }
+
     private fun updatePreference () {
         viewModelScope.launch {
             toDoPreference.saveToDoCount(taskId)
