@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -118,7 +119,9 @@ fun ToDoList(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
 
-                FloatingActionButton(onClick = { if (taskItems.isNotEmpty()) isOpenDialog.value = true }) {
+                FloatingActionButton(onClick = {
+                    if (taskItems.isNotEmpty()) isOpenDialog.value = true
+                }) {
                     Text(text = "クリア")
                 }
 
@@ -208,6 +211,12 @@ fun ToDoItem(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         var text by remember { mutableStateOf(taskName) }
+        Checkbox(
+            checked = isCompleted,
+            onCheckedChange = {
+                onCompletionToggle(!isCompleted)
+            }
+        )
         OutlinedTextField(
             value = taskName,
             onValueChange = {
@@ -216,23 +225,32 @@ fun ToDoItem(
             },
             modifier = Modifier
                 .weight(1f),
-            placeholder = { Text(text = "新しいタスク") },
+//            placeholder = { Text(text = "新しいタスク") },
+            label = {
+                Text(
+                    text =
+                    if (taskName.isNotEmpty())
+                        if (isCompleted) "完了" else "未完了"
+                    else
+                        "新しいタスク"
+                )
+            },
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done,
                 keyboardType = KeyboardType.Ascii
             )
         )
 
-        Button(
-            onClick = {
-                onCompletionToggle(!isCompleted)
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (isCompleted) Color.DarkGray else Color.Green
-            )
-        ) {
-            Text(text = if (isCompleted) "完了済み" else "完了", fontWeight = FontWeight(800))
-        }
+//        Button(
+//            onClick = {
+//                onCompletionToggle(!isCompleted)
+//            },
+//            colors = ButtonDefaults.buttonColors(
+//                containerColor = if (isCompleted) Color.DarkGray else Color.Green
+//            )
+//        ) {
+//            Text(text = if (isCompleted) "完了済み" else "完了", fontWeight = FontWeight(800))
+//        }
 
         Button(
             onClick = {
