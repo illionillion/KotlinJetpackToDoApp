@@ -4,7 +4,7 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-public class ToDoPreferences(context: Context) {
+class ToDoPreferences(context: Context) {
     private val sharedPreferences = context.getSharedPreferences("com.example.kotlinJetpackTodoApp.ToDoPreferences", Context.MODE_PRIVATE)
     private val gson = Gson()
 
