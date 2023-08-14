@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
@@ -119,16 +120,31 @@ fun ToDoList(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
 
-                FloatingActionButton(onClick = {
+                FloatingActionButton(
+                    onClick = {
                     if (taskItems.isNotEmpty()) isOpenDialog.value = true
-                }) {
-                    Text(text = "クリア")
+                    },
+                    containerColor = Color.Red
+                ) {
+                    Text(
+                        text = "クリア",
+                        color = Color.White,
+                        modifier = Modifier
+                            .weight(25.0F, true)
+                    )
                 }
 
-                FloatingActionButton(onClick = { onTaskAdd() }) {
+                FloatingActionButton(
+                    onClick = { onTaskAdd() },
+                    containerColor = Color.Green
+                ) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "追加",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .size(30.dp)
+                            .weight(25.0F, true)
                     )
                 }
             }
