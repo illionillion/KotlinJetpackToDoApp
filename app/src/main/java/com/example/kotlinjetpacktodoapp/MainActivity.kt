@@ -103,7 +103,6 @@ fun ToDoList(
     onTaskClear: () -> Unit,
 ) {
 
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -122,7 +121,7 @@ fun ToDoList(
 
                 FloatingActionButton(
                     onClick = {
-                    if (taskItems.isNotEmpty()) isOpenDialog.value = true
+                        if (taskItems.isNotEmpty()) isOpenDialog.value = true
                     },
                     containerColor = Color.Red
                 ) {
@@ -241,7 +240,6 @@ fun ToDoItem(
             },
             modifier = Modifier
                 .weight(1f),
-//            placeholder = { Text(text = "新しいタスク") },
             label = {
                 Text(
                     text =
@@ -256,17 +254,6 @@ fun ToDoItem(
                 keyboardType = KeyboardType.Ascii
             )
         )
-
-//        Button(
-//            onClick = {
-//                onCompletionToggle(!isCompleted)
-//            },
-//            colors = ButtonDefaults.buttonColors(
-//                containerColor = if (isCompleted) Color.DarkGray else Color.Green
-//            )
-//        ) {
-//            Text(text = if (isCompleted) "完了済み" else "完了", fontWeight = FontWeight(800))
-//        }
 
         Button(
             onClick = {
